@@ -113,7 +113,12 @@ impl Client {
     }
 
     /// Constructs a client to interact with a Subsonic instance, accepting a Reqwest Client.
-    pub fn with_client(url: &str, user: &str, password: &str, reqclient: ReqwestClient) -> Result<Client> {
+    pub fn with_client(
+        url: &str,
+        user: &str,
+        password: &str,
+        reqclient: ReqwestClient,
+    ) -> Result<Client> {
         let auth = SubsonicAuth::new(user, password);
         let url = url.parse::<Url>()?;
         let ver = Version::from("1.14.0");
