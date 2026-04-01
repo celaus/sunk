@@ -26,7 +26,7 @@ impl Playlist {
     pub fn songs(&self, client: &Client) -> Result<Vec<Song>> {
         if self.songs.len() as u64 != self.song_count {
             let remote_songs = get_playlist(client, self.id.clone())?.songs;
-            Ok()
+            Ok(remote_songs)
         } else {
             Ok(self.songs.clone())
         }
