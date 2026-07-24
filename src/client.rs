@@ -1,9 +1,8 @@
-use std::io::Read;
 use std::iter;
 
 use md5;
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
-use reqwest::Client as ReqwestClient;
+use reqwest::blocking::Client as ReqwestClient;
 use reqwest::Url;
 use serde_json;
 
@@ -149,7 +148,7 @@ impl Client {
 
     /// Internal helper function to construct a URL when the actual fetching is
     /// not required.
-    #[cfg_attr(feature = "cargo-clippy", allow(clippy::needless_pass_by_value))]
+    #[allow(clippy::needless_pass_by_value)]
     pub(crate) fn build_url(&self, query: &str, args: Query) -> Result<String> {
         let scheme = self.url.scheme();
         let addr = self.url.host_str().ok_or(Error::Url(UrlError::Address))?;
@@ -187,7 +186,7 @@ impl Client {
         let uri: Url = self.build_url(query, args)?.parse().unwrap();
 
         info!("Connecting to {}", uri);
-        let mut res = self.reqclient.get(uri).send()?;
+        let res = self.reqclient.get(uri).send()?;
 
         if res.status().is_success() {
             let response = res.json::<Response>()?;
@@ -211,7 +210,7 @@ impl Client {
     /// XML-parsed one.
     pub(crate) fn get_raw(&self, query: &str, args: Query) -> Result<String> {
         let uri: Url = self.build_url(query, args)?.parse().unwrap();
-        let mut res = self.reqclient.get(uri).send()?;
+        let res = self.reqclient.get(uri).send()?;
         Ok(res.text()?)
     }
 
@@ -219,11 +218,15 @@ impl Client {
     pub(crate) fn get_bytes(&self, query: &str, args: Query) -> Result<Vec<u8>> {
         let uri: Url = self.build_url(query, args)?.parse().unwrap();
         let res = self.reqclient.get(uri).send()?;
-        Ok(res.bytes().map(|b| b.unwrap()).collect())
+        Ok(res.bytes().unwrap().into())
     }
 
     /// Returns a streaming response.
-    pub(crate) fn get_stream(&self, query: &str, args: Query) -> Result<reqwest::Response> {
+    pub(crate) fn get_stream(
+        &self,
+        query: &str,
+        args: Query,
+    ) -> Result<reqwest::blocking::Response> {
         let uri: Url = self.build_url(query, args)?.parse().unwrap();
         Ok(self.reqclient.get(uri).send()?)
     }
@@ -232,7 +235,7 @@ impl Client {
     pub fn hls_bytes(&self, hls: &Hls) -> Result<Vec<u8>> {
         let url: Url = self.url.join(&hls.url)?;
         let res = self.reqclient.get(url).send()?;
-        Ok(res.bytes().map(|b| b.unwrap()).collect())
+        Ok(res.bytes().unwrap().into())
     }
 
     /// Tests a connection with the server.

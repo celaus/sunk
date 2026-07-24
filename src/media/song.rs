@@ -110,7 +110,7 @@ impl Song {
     /// the builder.
     ///
     /// [struct level documentation]: ./struct.RandomSongs.html
-    pub fn random_with(client: &Client) -> RandomSongs {
+    pub fn random_with(client: &'_ Client) -> RandomSongs<'_> {
         RandomSongs::new(client, 10)
     }
 

@@ -1,4 +1,3 @@
-use std::convert::From;
 use std::{fmt, io, num, result};
 
 use reqwest;
@@ -46,7 +45,7 @@ pub enum Error {
 pub enum UrlError {
     /// Unable to parse the URL.
     #[error("{0}")]
-    Reqwest(reqwest::UrlError),
+    Reqwest(#[from] url::ParseError),
     /// Unable to determine the scheme of the address.
     ///
     /// The provider for the `Client` does not automatically add the HTTP
@@ -160,14 +159,8 @@ impl fmt::Display for ApiError {
     }
 }
 
-impl From<reqwest::UrlError> for UrlError {
-    fn from(err: reqwest::UrlError) -> UrlError {
-        UrlError::Reqwest(err)
-    }
-}
-
-impl From<reqwest::UrlError> for Error {
-    fn from(err: reqwest::UrlError) -> Error {
-        Error::Url(err.into())
+impl From<url::ParseError> for Error {
+    fn from(value: url::ParseError) -> Self {
+        Self::Url(value.into())
     }
 }

@@ -6,7 +6,7 @@ use serde::de::{Deserialize, Deserializer};
 use serde_json;
 
 use crate::id::Id;
-use crate::query::{Arg, IntoArg, Query};
+use crate::query::Query;
 use crate::{Client, Result, Song};
 
 /// A wrapper on a `Client` to control just the jukebox.
@@ -73,7 +73,7 @@ impl<'de> Deserialize<'de> for JukeboxPlaylist {
 
 impl<'a> Jukebox<'a> {
     /// Creates a new handler to the jukebox of the client.
-    pub fn start(client: &'a Client) -> Jukebox {
+    pub fn start(client: &'a Client) -> Jukebox<'a> {
         Jukebox { client }
     }
 
