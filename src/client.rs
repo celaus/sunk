@@ -1,7 +1,7 @@
 use std::iter;
 
 use md5;
-use rand::{distributions::Alphanumeric, thread_rng, Rng};
+use rand::{distr::Alphanumeric, RngExt};
 use reqwest::blocking::Client as ReqwestClient;
 use reqwest::Url;
 use serde_json;
@@ -78,9 +78,9 @@ impl SubsonicAuth {
     fn to_url(&self, ver: Version) -> String {
         // First md5 support.
         let auth = if ver >= "1.13.0".into() {
-            let mut rng = thread_rng();
+            let mut rng = rand::rng();
             let salt: String = iter::repeat(())
-                .map(|()| rng.sample(Alphanumeric))
+                .map(|()| rng.sample(Alphanumeric) as char)
                 .take(SALT_SIZE)
                 .collect();
             let pre_t = self.password.to_string() + &salt;
