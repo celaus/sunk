@@ -14,8 +14,8 @@ edition = "2021"
 
 [dependencies]
 thiserror = "2"
-log = "0.4.6"
-md5 = "0.6.0"
+log = "0.4.33"
+md5 = "0.8.1"
 rand = { version = "0.10.2", features = ["thread_rng"] }
 readonly = "0.2"
 serde = "1.0.229"
